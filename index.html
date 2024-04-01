@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="friendInputs"></div>
+    <br/>
+    <button onclick="calculateTotalAge()">คำนวณอายุรวมของเพื่อน</button><br/>
+    <button onclick="calculateAverageAge()">
+      คำนวณอายุเฉลี่ยของกลุ่มเพื่อน
+    </button><br/>
+    <button onclick="calculateMinAge()">
+      คำนวณอายุของเพื่อนที่อายุน้อยที่สุด
+    </button><br/>
+    <button onclick="calculateMaxAge()">
+      คำนวณอายุของเพื่อนที่อายุมากที่สุด
+    </button>
+    <br/><br/>
+    <button type="reset" onclick="refreshPage()">Reset</button>
+    <button onclick="refreshPage()">สุ่มจำนวนเพื่อนใหม่</button>
+    <div id="result"></div>
+
+    <script>
+      // random 1-9
+      function generateRandomNumber() {
+        return Math.floor(Math.random() * 9) + 1;
+      }
+
+      // สร้าง input สำหรับกรอกชื่อและอายุของเพื่อน
+      function createFriendInputs(count) {
+        var friendInputsContainer = document.getElementById("friendInputs");
+        for (var i = 0; i < count; i++) {
+          var nameLabel = document.createElement("label");
+          nameLabel.textContent = "ชื่อเพื่อนที่ " + (i + 1) + ": ";
+          var nameInput = document.createElement("input");
+          nameInput.type = "text";
+          nameInput.placeholder = "ชื่อเพื่อนที่ " + (i + 1);
+          nameInput.required = true;
+          friendInputsContainer.appendChild(nameLabel);
+          friendInputsContainer.appendChild(nameInput);
+
+          var ageLabel = document.createElement("label");
+          ageLabel.textContent = " อายุ: ";
+          var ageInput = document.createElement("input");
+          ageInput.type = "number";
+          ageInput.placeholder = "อายุ";
+          ageInput.required = true;
+          friendInputsContainer.appendChild(ageLabel);
+          friendInputsContainer.appendChild(ageInput);
+
+          friendInputsContainer.appendChild(document.createElement("br"));
+        }
+      }
+
+      // ฟังก์ชันสำหรับคำนวณอายุรวมของเพื่อนทั้งหมด
+      function calculateTotalAge() {
+        var totalAge = 0;
+        var inputs = document.querySelectorAll(
+          "#friendInputs input[type='number']"
+        );
+        inputs.forEach(function (input) {
+          if (input.value !== "") {
+            totalAge += parseInt(input.value);
+          }
+        });
+        var resultContainer = document.getElementById("result");
+        resultContainer.textContent =
+          "ผลลัพธ์: อายุรวมของเพื่อนทั้งหมด = " + totalAge;
+      }
+
+      // ฟังก์ชันสำหรับคำนวณอายุเฉลี่ยของกลุ่มเพื่อน
+      function calculateAverageAge() {
+        var totalAge = 0;
+        var totalFriends = 0;
+        var inputs = document.querySelectorAll(
+          "#friendInputs input[type='number']"
+        );
+        inputs.forEach(function (input) {
+          if (input.value !== "") {
+            totalAge += parseInt(input.value);
+            totalFriends++;
+          }
+        });
+        var averageAge = totalAge / totalFriends;
+        var resultContainer = document.getElementById("result");
+        resultContainer.textContent =
+          "ผลลัพธ์: อายุเฉลี่ยของกลุ่มเพื่อน = " + averageAge.toFixed(2);
+      }
+
+      // Calculate Min Age
+      function calculateMinAge() {
+        var minAge = Infinity;
+        var minAgeFriends = [];
+        var inputs = document.querySelectorAll(
+          "#friendInputs input[type='text']"
+        );
+        inputs.forEach(function (input, index) {
+          var ageInput = document.querySelectorAll(
+            "#friendInputs input[type='number']"
+          )[index];
+          if (ageInput.value !== "") {
+            var age = parseInt(ageInput.value);
+            if (age < minAge) {
+              minAge = age;
+              minAgeFriends = [{ name: input.value, age: age }];
+            } else if (age === minAge) {
+              minAgeFriends.push({ name: input.value, age: age });
+            }
+          }
+        });
+        var resultContainer = document.getElementById("result");
+        if (minAgeFriends.length === 1) {
+          resultContainer.textContent =
+            "ผลลัพธ์: เพื่อนที่อายุน้อยที่สุดคือ " +
+            minAgeFriends[0].name +
+            " อายุ " +
+            minAgeFriends[0].age;
+        } else if (minAgeFriends.length > 1) {
+          var resultText = "ผลลัพธ์: เพื่อนที่มีอายุน้อยที่สุดคือ ";
+          minAgeFriends.forEach(function (friend, index) {
+            resultText += friend.name + " (อายุ " + friend.age + ")";
+            if (index < minAgeFriends.length - 1) {
+              resultText += ", ";
+            }
+          });
+          resultContainer.textContent = resultText;
+        } else {
+          resultContainer.textContent = "ผลลัพธ์: ไม่มีข้อมูลเพื่อคำนวณ";
+        }
+      }
+
+      // Calculate Max Age
+      function calculateMaxAge() {
+        var maxAge = -Infinity;
+        var maxAgeFriends = [];
+        var inputs = document.querySelectorAll(
+          "#friendInputs input[type='text']"
+        );
+        inputs.forEach(function (input, index) {
+          var ageInput = document.querySelectorAll(
+            "#friendInputs input[type='number']"
+          )[index];
+          if (ageInput.value !== "") {
+            var age = parseInt(ageInput.value);
+            if (age > maxAge) {
+              maxAge = age;
+              maxAgeFriends = [{ name: input.value, age: age }];
+            } else if (age === maxAge) {
+              maxAgeFriends.push({ name: input.value, age: age });
+            }
+          }
+        });
+        var resultContainer = document.getElementById("result");
+        if (maxAgeFriends.length === 1) {
+          resultContainer.textContent =
+            "ผลลัพธ์: เพื่อนที่มีอายุมากที่สุดคือ " +
+            maxAgeFriends[0].name +
+            " อายุ " +
+            maxAgeFriends[0].age;
+        } else if (maxAgeFriends.length > 1) {
+          var resultText = "ผลลัพธ์: เพื่อนที่มีอายุมากที่สุดคือ ";
+          maxAgeFriends.forEach(function (friend, index) {
+            resultText += friend.name + " (อายุ " + friend.age + ")";
+            if (index < maxAgeFriends.length - 1) {
+              resultText += ", ";
+            }
+          });
+          resultContainer.textContent = resultText;
+        } else {
+          resultContainer.textContent = "ผลลัพธ์: ไม่มีข้อมูลเพื่อคำนวณ";
+        }
+      }
+
+      // ฟังก์ชันสำหรับสุ่มจำนวนเพื่อนใหม่ และ reset
+      function refreshPage() {
+        location.reload();
+      }
+
+      // เรียกใช้ฟังก์ชันและแสดงผลลัพธ์ใน div ที่มี id เป็น "friendInputs"
+      var randomNumber = generateRandomNumber();
+      var numberContainer = document.getElementById("friendInputs");
+      numberContainer.innerHTML =
+        "<h2>เพื่อนจำนวน " + randomNumber + " คน</h2>";
+      createFriendInputs(randomNumber);
+    </script>
+  </body>
+</html>
